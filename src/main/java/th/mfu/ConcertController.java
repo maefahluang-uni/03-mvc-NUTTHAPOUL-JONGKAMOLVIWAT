@@ -4,6 +4,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -19,13 +22,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class ConcertController {
 
     // ใช้ HashMap เก็บ Concert โดย key = id
-    private HashMap<Integer, Concert> concerts = new HashMap<>();
+    private Map<Integer, Concert> concerts = new HashMap<>();
     private int nextId = 1;
 
     // ให้ Spring แปลง String → Date อัตโนมัติ
     @InitBinder
     public void initBinder(WebDataBinder binder) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+        SimpleDateFormat dateFormat  = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
         dateFormat.setLenient(false);
         binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
     }
@@ -34,7 +37,7 @@ public class ConcertController {
     @GetMapping("/concerts")
     public String listConcerts(Model model) {
         model.addAttribute("concerts", concerts.values());
-        return "concerts"; // ไปที่ template concerts.html
+        return "list-concert"; // ไปที่ template concerts.html
     }
 
     // 2. แสดงฟอร์มเพิ่ม concert
@@ -47,8 +50,9 @@ public class ConcertController {
     // 3. บันทึก concert ใหม่
     @PostMapping("/concerts")
     public String saveConcert(@ModelAttribute Concert concert) {
-        concert.setId(nextId++);
+        concert.setId(nextId);
         concerts.put(concert.getId(), concert);
+        nextId++;
         return "redirect:/concerts";
     }
 
